@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Account Security — TriCipher{% endblock %}
+
+{% block content %}
+<div class="container page-enter account-page">
+  <div class="hero-eyebrow">Account</div>
+  <h1 class="admin-title">Password <span class="text-gradient">Security</span></h1>
+  <p class="admin-desc">TriCipher requires a password change every {{ password_status.rotation_months }} months to keep your account secure.</p>
+
+  {% if password_status.is_expired %}
+  <div class="alert alert-error password-reminder-banner">
+    <strong>Password expired.</strong>
+    Your password is over {{ password_status.rotation_days }} days old. Change it now to continue using the platform safely.
+  </div>
+  {% elif password_status.reminder_due %}
+  <div class="alert alert-warning password-reminder-banner">
+    <strong>Password change due soon.</strong>
+    Your password expires in {{ password_status.days_until_expiry }} day{{ 's' if password_status.days_until_expiry != 1 else '' }}.
+    Update it before {{ password_status.password_expires_at }}.
+  </div>
+  {% else %}
+  <div class="alert alert-info password-reminder-banner">
+    <strong>Password rotation active.</strong>
+    Your password is valid for {{ password_status.days_until_expiry }} more day{{ 's' if password_status.days_until_expiry != 1 else '' }}.
+  </div>
+  {% endif %}
+
+  <div class="account-grid">
+    <div class="card reveal">
+      <div class="card-glow" style="background:#22d3ee;opacity:0.15"></div>
+      <div class="card-accent"></div>
+      <div class="card-top">
+        <div class="card-icon card-icon-cyan">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div class="card-top-text">
+          <span class="card-tag">Rotation Policy</span>
+          <h2>Password Status</h2>
+          <p>6-month rotation schedule for {{ user.username }}</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <dl class="account-status-list">
+          <div class="account-status-row">
+            <dt>Last changed</dt>
+            <dd>{{ password_status.password_changed_at or '—' }}</dd>
+          </div>
+          <div class="account-status-row">
+            <dt>Next change due</dt>
+            <dd>{{ password_status.password_expires_at }}</dd>
+          </div>
+          <div class="account-status-row">
+            <dt>Days remaining</dt>
+            <dd>
+              {% if password_status.is_expired %}
+              <span class="tag tag-expired">Expired ({{ password_status.days_until_expiry | abs }} days overdue)</span>
+              {% elif password_status.reminder_due %}
+              <span class="tag tag-due-soon">{{ password_status.days_until_expiry }} days</span>
+              {% else %}
+              <span class="tag tag-ok">{{ password_status.days_until_expiry }} days</span>
+              {% endif %}
+            </dd>
+          </div>
+          <div class="account-status-row">
+            <dt>Rotation interval</dt>
+            <dd>Every {{ password_status.rotation_days }} days (~{{ password_status.rotation_months }} months)</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-glow" style="background:#8b5cf6;opacity:0.2"></div>
+      <div class="card-accent"></div>
+      <div class="card-top">
+        <div class="card-icon card-icon-purple">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="card-top-text">
+          <span class="card-tag">Update</span>
+          <h2>Change Password</h2>
+          <p>Resets your 6-month rotation timer on success.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="changePasswordError" class="alert alert-error" style="display:none"></div>
+        <div id="changePasswordSuccess" class="alert alert-info" style="display:none"></div>
+
+        <form id="changePasswordForm" class="account-form">
+          <div class="field-group">
+            <label for="currentPassword">Current password</label>
+            <input type="password" id="currentPassword" name="current_password" autocomplete="current-password" required>
+          </div>
+          <div class="field-group">
+            <label for="newPassword">New password</label>
+            <input type="password" id="newPassword" name="new_password" autocomplete="new-password" minlength="6" required>
+          </div>
+          <div class="field-group">
+            <label for="confirmPassword">Confirm new password</label>
+            <input type="password" id="confirmPassword" name="confirm_password" autocomplete="new-password" minlength="6" required>
+          </div>
+          <button type="submit" class="btn btn-primary full-width">Update Password</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/account.js') }}"></script>
+{% endblock %}

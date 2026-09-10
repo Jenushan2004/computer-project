@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}TriCipher{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <div class="bg-layer" aria-hidden="true">
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+    <div class="bg-grid"></div>
+  </div>
+
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a href="{{ url_for('index') }}" class="logo">
+        <span class="logo-mark">◈</span>
+        TriCipher
+      </a>
+      <div class="nav-links">
+        {% if session.get('user_id') %}
+          <span class="nav-status"><span class="status-dot"></span> {{ session.username }}</span>
+          <a href="{{ url_for('account') }}" class="btn btn-ghost btn-sm">Account</a>
+          {% if session.get('is_admin') %}
+            <a href="{{ url_for('admin_panel') }}" class="btn btn-ghost btn-sm">Admin</a>
+          {% endif %}
+          <form action="{{ url_for('logout') }}" method="post" style="display:inline">
+            <button type="submit" class="btn btn-ghost btn-sm">Logout</button>
+          </form>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="btn btn-ghost btn-sm">Login</a>
+          <a href="{{ url_for('register') }}" class="btn btn-primary btn-sm">Get Started</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <main class="page-main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span class="footer-brand">◈ TriCipher</span>
+      <span class="footer-tag">Educational cybersecurity demos — simulated attacks only</span>
+    </div>
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

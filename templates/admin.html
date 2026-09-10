@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel — TriCipher{% endblock %}
+
+{% block content %}
+<div class="container page-enter">
+  <div class="admin-header">
+    <div>
+      <div class="hero-eyebrow">Administration</div>
+      <h1 class="admin-title">User <span class="text-gradient">Management</span></h1>
+      <p class="admin-desc">All accounts stored in MongoDB (<code>tricipher.users</code>)</p>
+    </div>
+    <button type="button" class="btn btn-primary btn-sm" onclick="refreshUsers()">↻ Refresh</button>
+  </div>
+
+  <div class="admin-stats">
+    <div class="stat-card">
+      <span class="stat-num">{{ users|length }}</span>
+      <span class="stat-label">Total Users</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">{{ users|selectattr('is_admin')|list|length }}</span>
+      <span class="stat-label">Admins</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">{{ users|selectattr('last_logged_in')|list|length }}</span>
+      <span class="stat-label">Ever Logged In</span>
+    </div>
+  </div>
+
+  <div class="card table-wrap reveal">
+    <div class="card-glow" style="background:#8b5cf6;opacity:0.2"></div>
+    <div class="card-accent"></div>
+    <table>
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Role</th>
+          <th>Created</th>
+          <th>Last Login</th>
+          <th>Password Changed</th>
+          <th>Rotation Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="usersTable">
+        {% for user in users %}
+        <tr data-id="{{ user.id }}">
+          <td><span class="user-cell">👤 {{ user.username }}</span></td>
+          <td>
+            {% if user.is_admin %}
+            <span class="tag tag-admin">Admin</span>
+            {% else %}
+            <span class="tag tag-user">User</span>
+            {% endif %}
+          </td>
+          <td>{{ user.created_at or '—' }}</td>
+          <td>{{ user.last_logged_in or 'Never' }}</td>
+          <td>{{ user.password_changed_at or '—' }}</td>
+          <td>
+            {% if user.is_expired %}
+            <span class="tag tag-expired">Expired</span>
+            {% elif user.reminder_due %}
+            <span class="tag tag-due-soon">Due in {{ user.days_until_expiry }}d</span>
+            {% else %}
+            <span class="tag tag-ok">OK ({{ user.days_until_expiry }}d left)</span>
+            {% endif %}
+          </td>
+          <td class="actions-cell">
+            <button type="button" class="btn btn-ghost btn-sm" onclick="openEditModal('{{ user.id }}', '{{ user.username }}', {{ 'true' if user.is_admin else 'false' }})">Edit</button>
+            <button type="button" class="btn btn-danger btn-sm" onclick="deleteUser('{{ user.id }}', '{{ user.username }}')">Delete</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal-overlay" id="editModal">
+  <div class="modal reveal">
+    <h3>Edit User</h3>
+    <input type="hidden" id="editUserId">
+    <label for="editUsername">Username</label>
+    <input type="text" id="editUsername">
+    <label for="editPassword">New Password (leave blank to keep)</label>
+    <input type="password" id="editPassword" autocomplete="new-password">
+    <label class="toggle-pill" style="margin-top:0.75rem">
+      <input type="checkbox" id="editIsAdmin">
+      Admin privileges
+    </label>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost btn-sm" onclick="closeEditModal()">Cancel</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="saveUser()">Save Changes</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

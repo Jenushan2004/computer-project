@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Login — TriCipher{% endblock %}
+
+{% block content %}
+<div class="container auth-wrap page-enter">
+  <div class="auth-layout">
+    <div class="auth-visual">
+      <div class="auth-visual-inner">
+        <div class="auth-visual-icon">◈</div>
+        <h2>Enter the Lab</h2>
+        <p>Access the AI coach, track your session, and explore how real attacks unfold — safely.</p>
+        <ul class="auth-features">
+          <li>Guided AI security demos</li>
+          <li>Live attack simulations</li>
+          <li>Secure password tools</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card auth-card reveal">
+      <div class="card-glow"></div>
+      <div class="card-accent"></div>
+      <div class="auth-card-body">
+        <h1>Welcome back</h1>
+        <p class="subtitle">Sign in to chat with TriCipher.</p>
+
+        {% if error %}
+        <div class="alert alert-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="post" action="{{ url_for('login') }}">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required autocomplete="username" placeholder="your_username">
+
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="••••••••">
+
+          <button type="submit" class="btn btn-primary full-width">Sign In</button>
+        </form>
+
+        <div class="auth-footer">
+          No account? <a href="{{ url_for('register') }}">Register here</a>
+        </div>
+
+        <div class="alert alert-info auth-hint">
+          Demo admin: <strong>admin</strong> / <strong>admin123</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

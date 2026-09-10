@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Register — TriCipher{% endblock %}
+
+{% block content %}
+<div class="container auth-wrap page-enter">
+  <div class="auth-layout">
+    <div class="auth-visual">
+      <div class="auth-visual-inner">
+        <div class="auth-visual-icon">🛡️</div>
+        <h2>Join the Defense</h2>
+        <p>Create a free account. Your data stays local in a JSON file on this machine — no cloud, no database.</p>
+        <ul class="auth-features">
+          <li>Local JSON storage</li>
+          <li>Hashed passwords</li>
+          <li>Instant access to all tools</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card auth-card reveal">
+      <div class="card-glow"></div>
+      <div class="card-accent"></div>
+      <div class="auth-card-body">
+        <h1>Create account</h1>
+        <p class="subtitle">Start learning how hackers think — in minutes.</p>
+
+        {% if error %}
+        <div class="alert alert-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="post" action="{{ url_for('register') }}">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required minlength="3" autocomplete="username" placeholder="pick a username">
+
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required minlength="6" autocomplete="new-password" placeholder="min. 6 characters">
+
+          <button type="submit" class="btn btn-primary full-width">Create Account</button>
+        </form>
+
+        <div class="auth-footer">
+          Already have an account? <a href="{{ url_for('login') }}">Login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
